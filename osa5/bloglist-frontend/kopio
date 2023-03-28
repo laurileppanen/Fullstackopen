@@ -1,0 +1,59 @@
+/*  
+
+import React from 'react'
+import '@testing-library/jest-dom/extend-expect'
+import { render, screen, fireEvent } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+import Blog from './Blog'
+
+test('Blogs component renders title and author but not url or likes', () => {
+
+    const blog = {
+        title: 'otsikko',
+        author: 'kirjoittaja',
+        url: 'https://urli.com',
+        likes: 201,
+        user: {
+            name: 'Lauri Leppänen',
+            username: 'late22'
+        },
+      }   
+
+  const { container } = render(<Blog blog={blog}/>)
+
+  const div = container.querySelector('.titleandauthor')
+
+  expect(div).toHaveTextContent(
+    'otsikko'
+  )
+
+  expect(div).not.toHaveTextContent(
+    'https://urli.com'
+)
+
+})
+
+
+
+test('Clicking button shows also url, likes and user', async () => {
+      const blog = {
+        title: 'otsikko',
+        author: 'kirjoittaja',
+        url: 'https://urli.com',
+        likes: 201,
+        user: {
+            name: 'Lauri Leppänen',
+            username: 'late22'
+        },
+      }
+
+      let component = render(<Blog blog={blog}/>)
+
+      const button = component.getByText('view')
+      fireEvent.click(button)
+      
+      expect(component.container).toHaveTextContent(blog.likes)
+
+  })
+
+*/
