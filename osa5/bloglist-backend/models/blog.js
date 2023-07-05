@@ -5,6 +5,8 @@ const config = require('../utils/config')
 const mongoUrl = config.MONGODB_URI 
 mongoose.connect(mongoUrl)
 
+
+
 const blogSchema = mongoose.Schema({
   title: String,
   author: String,
