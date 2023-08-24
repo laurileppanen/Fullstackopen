@@ -35,12 +35,16 @@ const anecdoteSlice = createSlice({
     },
     toggleVote(state, action) {
       const id = action.payload
+      console.log('AIDIIII:', id)
       const anecdoteToChange = state.find(n => n.id === id)
+      const selko = JSON.parse(JSON.stringify(anecdoteToChange))
+      console.log('SELKO:', selko)
       const changedAnecdote = {
-        ...anecdoteToChange,
-        important: !anecdoteToChange.important
+        ...selko,
+        votes: selko.votes+1 
       }
       console.log('VOTE', JSON.parse(JSON.stringify(state)))
+      console.log('moi')
       return state.map(anecdote =>
         anecdote.id !== id ? anecdote : changedAnecdote
       )
