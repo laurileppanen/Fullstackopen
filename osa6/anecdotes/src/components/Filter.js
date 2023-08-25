@@ -7,7 +7,6 @@ const Filter = () => {
     const handleChange = (event) => {
       // input-kentän arvo muuttujassa event.target.value
       const arvo = event.target.value
-      console.log('ARVO:', arvo)
       dispatch(filterChange(arvo))
     }
     const style = {
@@ -16,6 +15,7 @@ const Filter = () => {
   
     return (
       <div style={style}>
+        <br/>
         filter <input onChange={handleChange} />
       </div>
     )

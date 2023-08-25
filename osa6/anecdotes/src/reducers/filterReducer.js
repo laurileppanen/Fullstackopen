@@ -5,7 +5,6 @@ const filterSlice = createSlice({
   initialState: 'ALL',
   reducers: {
     filterChange(state, action) {
-      console.log('moi')
       const content = action.payload
       return content
     }
