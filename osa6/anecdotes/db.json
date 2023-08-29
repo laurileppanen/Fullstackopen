@@ -82,7 +82,7 @@
     {
       "content": "Redux Thunk",
       "id": "97348",
-      "votes": 9
+      "votes": 10
     },
     {
       "content": "If it hurts, do it more often",
@@ -107,12 +107,27 @@
     {
       "content": "47145",
       "id": "95696",
-      "votes": 0
+      "votes": 1
     },
     {
       "content": "If it hurts, do it more often",
       "id": "47044",
       "votes": 1
+    },
+    {
+      "content": "Toimiiko Notification?",
+      "id": "55987",
+      "votes": 4
+    },
+    {
+      "content": "t.6.19",
+      "id": "86385",
+      "votes": 3
+    },
+    {
+      "content": "Konsoli",
+      "id": "79757",
+      "votes": 0
     }
   ]
 }
