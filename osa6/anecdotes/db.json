@@ -73,6 +73,21 @@
       "content": "testo",
       "id": "15698",
       "votes": 0
+    },
+    {
+      "content": "päivä2",
+      "id": "87589",
+      "votes": 0
+    },
+    {
+      "content": "Redux Thunk",
+      "id": "97348",
+      "votes": 0
+    },
+    {
+      "content": "Redux Thunk2",
+      "id": "21059",
+      "votes": 0
     }
   ]
 }
