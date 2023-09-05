@@ -28,6 +28,12 @@ const AnecdoteForm = () => {
         dispatch({ type: 'CLEAR_NOTIFICATION' })
       }, 5000)
     }
+    else {
+      dispatch({ type: 'SET_NOTIFICATION', payload: 'too short anecdote, must have length 5 or more' })
+      setTimeout(() => {
+        dispatch({ type: 'CLEAR_NOTIFICATION' })
+      }, 5000)
+    }
     
 }
 
