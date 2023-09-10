@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import {
   BrowserRouter as Router,
-  Routes, Route, Link
+  Routes, Route, Link,
+  useParams
 } from 'react-router-dom'
 
 import PropTypes from 'prop-types'
@@ -23,13 +24,31 @@ const AnecdoteList = ({ anecdotes }) => (
   <div>
     <h2>Anecdotes</h2>
     <ul>
-      {anecdotes.map(anecdote => <li key={anecdote.id} >{anecdote.content}</li>)}
+      {anecdotes.map(anecdote =>
+        <li key={anecdote.id} >
+          <Link to={`/anecdotes/${anecdote.id}`}>{anecdote.content}</Link>
+        </li>)}
     </ul>
   </div>
 )
 
 AnecdoteList.propTypes = {
   anecdotes: PropTypes.array.isRequired
+}
+
+const Anecdote = ({ anecdotes }) => {
+  console.log('ANEKDOOTIT:', anecdotes)
+  const id = useParams().id
+  const anecdote = anecdotes.find(anecdote => anecdote.id === Number(id))
+  return (
+    <div>
+      <h2>{anecdote.content}</h2>
+      <div>has {anecdote.votes} votes</div>
+      <br/>
+      <div>for more info see <Link>{anecdote.info}</Link></div>
+      <br/>
+    </div>
+  )
 }
 
 const About = () => (
@@ -142,6 +161,7 @@ const App = () => {
         <h1>Software anecdotes</h1>
         <Menu />
         <Routes>
+          <Route path="/anecdotes/:id" element={<Anecdote anecdotes={anecdotes} />}/>
           <Route path="/" element={<AnecdoteList anecdotes={anecdotes}/>} />
           <Route path="/about" element={<About />} />
           <Route path="/create" element={<CreateNew addNew={addNew}/>} />
