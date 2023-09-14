@@ -6,6 +6,7 @@ import {
 } from 'react-router-dom'
 
 import PropTypes from 'prop-types'
+import { useField } from './hooks'
 
 const Menu = () => {
   const padding = {
@@ -73,17 +74,19 @@ const Footer = () => (
 )
 
 const CreateNew = (props) => {
-  const [content, setContent] = useState('')
-  const [author, setAuthor] = useState('')
-  const [info, setInfo] = useState('')
+  const content = useField('text')
+  const author = useField('text')
+  const info = useField('text')
   const navigate = useNavigate()
+
+  console.log('KONTENTTI:', content)
 
   const handleSubmit = (e) => {
     e.preventDefault()
     props.addNew({
-      content,
-      author,
-      info,
+      content: content.value,
+      author: author.value,
+      info: info.value,
       votes: 0
     })
     navigate('/')
@@ -94,18 +97,12 @@ const CreateNew = (props) => {
     <div>
       <h2>create a new anecdote</h2>
       <form onSubmit={handleSubmit}>
-        <div>
-          content
-          <input name='content' value={content} onChange={(e) => setContent(e.target.value)} />
-        </div>
-        <div>
-          author
-          <input name='author' value={author} onChange={(e) => setAuthor(e.target.value)} />
-        </div>
-        <div>
-          url for more info
-          <input name='info' value={info} onChange={(e)=> setInfo(e.target.value)} />
-        </div>
+        content<input {...content}/>
+        <br/>
+        author<input {...author}/>
+        <br/>
+        info<input {...info}/>
+        <br/>
         <button>create</button>
       </form>
     </div>
@@ -169,6 +166,8 @@ const App = () => {
 
     setAnecdotes(anecdotes.map(a => a.id === id ? voted : a))
   }
+
+  const username = useField('text') 
 
   return (
     <Router>
