@@ -79,8 +79,6 @@ const CreateNew = (props) => {
   const info = useField('text')
   const navigate = useNavigate()
 
-  console.log('KONTENTTI:', content)
-
   const handleSubmit = (e) => {
     e.preventDefault()
     props.addNew({
@@ -90,6 +88,13 @@ const CreateNew = (props) => {
       votes: 0
     })
     navigate('/')
+  }
+
+  const handleReset = (e) => {
+    e.preventDefault()
+    content.reset()
+    author.reset()
+    info.reset()
   }
 
 
@@ -104,6 +109,7 @@ const CreateNew = (props) => {
         info<input {...info}/>
         <br/>
         <button>create</button>
+        <button onClick={handleReset}>reset</button>
       </form>
     </div>
   )
