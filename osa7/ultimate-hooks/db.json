@@ -1,0 +1,28 @@
+{
+  "notes": [
+    {
+      "content": "hei",
+      "id": 1
+    },
+    {
+      "content": "testi",
+      "id": 2
+    },
+    {
+      "content": "toka testi",
+      "id": 3
+    }
+  ],
+  "persons": [
+    {
+      "name": "lauri",
+      "number": "1234",
+      "id": 1
+    },
+    {
+      "name": "laura",
+      "number": "123456",
+      "id": 2
+    }
+  ]
+}
