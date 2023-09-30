@@ -1,0 +1,11 @@
+POST http://localhost:3003/api/blogs
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkFudHNhNzciLCJpZCI6IjY0MTM5NDFjNjQ4NTQyNzg0M2U1MmI5NSIsImlhdCI6MTY3OTA5MTU2OH0.8l_uIW_CKCKB1QkQiiQscgWD5hYQi9VfO56uWsdei9A
+
+    {
+       "title": "juhat ylläksellä",
+       "author": "Puranen",
+       "url": "http://localhost:3010/api/blogs",
+       "likes": 70
+      
+    }  
