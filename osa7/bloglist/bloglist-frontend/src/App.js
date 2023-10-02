@@ -20,9 +20,11 @@ const App = () => {
   const queryClient = useQueryClient();
   const { dispatch } = useNotification();
 
-  useEffect(() => {
-    blogService.getAll().then((blogs) => setBlogs(blogs));
-  }, []);
+  useQuery({
+    queryKey: ["blogs"],
+    queryFn: () => blogService.getAll(),
+    onSuccess: (blogs) => setBlogs(blogs),
+  });
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem("loggedBlogappUser");
@@ -103,6 +105,7 @@ const App = () => {
     try {
       blogFormRef.current.toggleVisibility();
       const returnedBlog = await blogService.create(blogObject);
+      console.log("BLOGI:", returnedBlog);
 
       returnedBlog.user = {
         id: user.id,
