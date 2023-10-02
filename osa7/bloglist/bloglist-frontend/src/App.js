@@ -6,6 +6,9 @@ import Notification from "./components/Notification";
 import BlogForm from "./components/BlogForm";
 import Togglable from "./components/Togglable";
 
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useNotification } from "./NotificationContext";
+
 const App = () => {
   const [blogs, setBlogs] = useState([]);
   const [username, setUsername] = useState("");
@@ -13,6 +16,9 @@ const App = () => {
   const [user, setUser] = useState(null);
   const [errorMessage, setErrorMessage] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
+
+  const queryClient = useQueryClient();
+  const { dispatch } = useNotification();
 
   useEffect(() => {
     blogService.getAll().then((blogs) => setBlogs(blogs));
@@ -44,17 +50,27 @@ const App = () => {
       blogService.setToken(user.token);
       setUser(user);
 
-      setSuccessMessage(`user ${user.username} logged in succesfully`);
+      console.log("moi");
+
+      dispatch({
+        type: "SET_NOTIFICATION",
+        payload: { message: `User ${user.name} logged in`, type: "success" },
+      });
       setTimeout(() => {
-        setSuccessMessage(null);
+        dispatch({ type: "CLEAR_NOTIFICATION" });
       }, 5000);
+
+      console.log("moi2");
 
       setUsername("");
       setPassword("");
     } catch (exception) {
-      setErrorMessage("wrong username or password");
+      dispatch({
+        type: "SET_NOTIFICATION",
+        payload: { message: `Wrong username or password`, type: "error" },
+      });
       setTimeout(() => {
-        setErrorMessage(null);
+        dispatch({ type: "CLEAR_NOTIFICATION" });
       }, 5000);
     }
   };
@@ -65,14 +81,20 @@ const App = () => {
       console.log(loggedUserJSON);
       setUser(null);
       window.localStorage.removeItem("loggedBlogappUser");
-      setSuccessMessage("logged out successfully");
+      dispatch({
+        type: "SET_NOTIFICATION",
+        payload: { message: `User ${user.name} logged in`, type: "success" },
+      });
       setTimeout(() => {
-        setSuccessMessage(null);
+        dispatch({ type: "CLEAR_NOTIFICATION" });
       }, 5000);
     } catch (error) {
-      setErrorMessage("logging out failed");
+      dispatch({
+        type: "SET_NOTIFICATION",
+        payload: { message: `logging out failed`, type: "error" },
+      });
       setTimeout(() => {
-        setErrorMessage(null);
+        dispatch({ type: "CLEAR_NOTIFICATION" });
       }, 5000);
     }
   };
@@ -89,19 +111,26 @@ const App = () => {
       };
       setBlogs(blogs.concat(returnedBlog));
 
-      setSuccessMessage(
-        `a new blog ${blogObject.title} by ${blogObject.author} added`,
-      );
-
+      dispatch({
+        type: "SET_NOTIFICATION",
+        payload: {
+          message: `a new blog '${blogObject.title}' by ${blogObject.author} added`,
+          type: "success",
+        },
+      });
       setTimeout(() => {
-        setSuccessMessage(null);
+        dispatch({ type: "CLEAR_NOTIFICATION" });
       }, 5000);
     } catch (error) {
-      setErrorMessage(
-        `a new blog ${blogObject.title} by ${blogObject.author} can't be added`,
-      );
+      dispatch({
+        type: "SET_NOTIFICATION",
+        payload: {
+          message: `a new blog '${blogObject.title}' by ${blogObject.author} can't be added`,
+          type: "error",
+        },
+      });
       setTimeout(() => {
-        setErrorMessage(null);
+        dispatch({ type: "CLEAR_NOTIFICATION" });
       }, 5000);
     }
   };
@@ -135,7 +164,7 @@ const App = () => {
     return (
       <div>
         <h2>Log in to application</h2>
-        <Notification message={errorMessage} successMessage={successMessage} />
+        <Notification />
 
         <form onSubmit={handleLogin}>
           <div>

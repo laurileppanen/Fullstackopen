@@ -1,12 +1,13 @@
-const Notification = ({ message, successMessage }) => {
-  if (message === null && successMessage === null) {
-    return null;
-  }
+import { useNotification } from "../NotificationContext";
 
-  const className = message ? "error" : "success";
-  const displayMessage = message || successMessage;
+const Notification = () => {
+  const { state } = useNotification();
 
-  return <div className={className}> {displayMessage} </div>;
+  if (!state) return null;
+
+  const className = state.type === "error" ? "error" : "success";
+
+  return <div className={className}>{state.message}</div>;
 };
 
 export default Notification;
