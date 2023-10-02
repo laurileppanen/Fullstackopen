@@ -8,6 +8,7 @@ import Togglable from "./components/Togglable";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useNotification } from "./NotificationContext";
+import { updateBlog } from "./services/blogs";
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
@@ -51,8 +52,6 @@ const App = () => {
 
       blogService.setToken(user.token);
       setUser(user);
-
-      console.log("moi");
 
       dispatch({
         type: "SET_NOTIFICATION",
@@ -138,28 +137,34 @@ const App = () => {
     }
   };
 
+  const updateBlogMutation = useMutation(updateBlog, {
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["blogs"] });
+    },
+    onError: (error) => {
+      console.error("Failed to update the blog:", error);
+    },
+  });
+
   const toggleLikes = (id) => {
     const blog = blogs.find((blog) => blog.id === id);
     const changedBlog = { ...blog, likes: blog.likes + 1 };
-    console.log("moi");
-    const usersName = blog.user.name;
-    const usersId = blog.user.id;
-    const usersUsername = blog.user.username;
-
-    blogService.update(id, changedBlog).then((returnedBlog) => {
-      returnedBlog.user = {
-        id: usersId,
-        name: usersName,
-        username: usersUsername,
-      };
-      setBlogs(blogs.map((blog) => (blog.id !== id ? blog : returnedBlog)));
-    });
+    console.log("moi", typeof id);
+    updateBlogMutation.mutate(changedBlog);
   };
+
+  const deleteBlogMutation = useMutation(blogService.remove, {
+    onSuccess: () => {
+      queryClient.invalidateQueries(["blogs"]);
+    },
+    onError: (error) => {
+      console.error("Failed to delete the blog:", error);
+    },
+  });
 
   const deleteBlog = async (blog) => {
     if (window.confirm(`Remove blog ${blog.title} by ${blog.author}`)) {
-      await blogService.remove(blog);
-      setBlogs(blogs.filter((blogi) => blogi.id !== blog.id));
+      deleteBlogMutation.mutate(blog);
     }
   };
 
