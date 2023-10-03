@@ -8,18 +8,20 @@ import Togglable from "./components/Togglable";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useNotification } from "./NotificationContext";
+import { useUser } from "./LoginContext";
 import { updateBlog } from "./services/blogs";
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [user, setUser] = useState(null);
   const [errorMessage, setErrorMessage] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
 
   const queryClient = useQueryClient();
-  const { dispatch } = useNotification();
+  const { dispatch: notificationDispatch } = useNotification();
+  const { dispatch: userDispatch } = useUser();
+  const { user } = useUser();
 
   useQuery({
     queryKey: ["blogs"],
@@ -31,8 +33,8 @@ const App = () => {
     const loggedUserJSON = window.localStorage.getItem("loggedBlogappUser");
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON);
-      setUser(user);
       blogService.setToken(user.token);
+      userDispatch({ type: "SET_USER", payload: user });
     }
   }, []);
 
@@ -51,27 +53,25 @@ const App = () => {
       window.localStorage.setItem("loggedBlogappUser", JSON.stringify(user));
 
       blogService.setToken(user.token);
-      setUser(user);
+      userDispatch({ type: "SET_USER", payload: user });
 
-      dispatch({
+      notificationDispatch({
         type: "SET_NOTIFICATION",
         payload: { message: `User ${user.name} logged in`, type: "success" },
       });
       setTimeout(() => {
-        dispatch({ type: "CLEAR_NOTIFICATION" });
+        notificationDispatch({ type: "CLEAR_NOTIFICATION" });
       }, 5000);
-
-      console.log("moi2");
 
       setUsername("");
       setPassword("");
     } catch (exception) {
-      dispatch({
+      notificationDispatch({
         type: "SET_NOTIFICATION",
         payload: { message: `Wrong username or password`, type: "error" },
       });
       setTimeout(() => {
-        dispatch({ type: "CLEAR_NOTIFICATION" });
+        notificationDispatch({ type: "CLEAR_NOTIFICATION" });
       }, 5000);
     }
   };
@@ -80,17 +80,18 @@ const App = () => {
     try {
       const loggedUserJSON = window.localStorage.getItem("loggedBlogappUser");
       console.log(loggedUserJSON);
-      setUser(null);
       window.localStorage.removeItem("loggedBlogappUser");
-      dispatch({
+      userDispatch({ type: "REMOVE_USER" });
+
+      notificationDispatch({
         type: "SET_NOTIFICATION",
         payload: { message: `User ${user.name} logged in`, type: "success" },
       });
       setTimeout(() => {
-        dispatch({ type: "CLEAR_NOTIFICATION" });
+        notificationDispatch({ type: "CLEAR_NOTIFICATION" });
       }, 5000);
     } catch (error) {
-      dispatch({
+      notificationDispatch({
         type: "SET_NOTIFICATION",
         payload: { message: `logging out failed`, type: "error" },
       });
@@ -113,7 +114,7 @@ const App = () => {
       };
       setBlogs(blogs.concat(returnedBlog));
 
-      dispatch({
+      notificationDispatch({
         type: "SET_NOTIFICATION",
         payload: {
           message: `a new blog '${blogObject.title}' by ${blogObject.author} added`,
@@ -121,10 +122,10 @@ const App = () => {
         },
       });
       setTimeout(() => {
-        dispatch({ type: "CLEAR_NOTIFICATION" });
+        notificationDispatch({ type: "CLEAR_NOTIFICATION" });
       }, 5000);
     } catch (error) {
-      dispatch({
+      notificationDispatch({
         type: "SET_NOTIFICATION",
         payload: {
           message: `a new blog '${blogObject.title}' by ${blogObject.author} can't be added`,
@@ -132,7 +133,7 @@ const App = () => {
         },
       });
       setTimeout(() => {
-        dispatch({ type: "CLEAR_NOTIFICATION" });
+        notificationDispatch({ type: "CLEAR_NOTIFICATION" });
       }, 5000);
     }
   };
