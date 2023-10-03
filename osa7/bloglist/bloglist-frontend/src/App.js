@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import Blog from "./components/Blog";
 import blogService from "./services/blogs";
 import loginService from "./services/login";
+import userService from "./services/users";
 import Notification from "./components/Notification";
 import BlogForm from "./components/BlogForm";
 import Togglable from "./components/Togglable";
@@ -11,12 +12,15 @@ import { useNotification } from "./NotificationContext";
 import { useUser } from "./LoginContext";
 import { updateBlog } from "./services/blogs";
 
+import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+
 const App = () => {
   const [blogs, setBlogs] = useState([]);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
+  const [users, setUsers] = useState([]);
 
   const queryClient = useQueryClient();
   const { dispatch: notificationDispatch } = useNotification();
@@ -27,6 +31,12 @@ const App = () => {
     queryKey: ["blogs"],
     queryFn: () => blogService.getAll(),
     onSuccess: (blogs) => setBlogs(blogs),
+  });
+
+  useQuery({
+    queryKey: ["users"],
+    queryFn: () => userService.getAll(),
+    onSuccess: (users) => setUsers(users),
   });
 
   useEffect(() => {
@@ -204,31 +214,82 @@ const App = () => {
     );
   }
 
-  return (
-    <div>
-      <h2>blogs</h2>
-      <Notification message={errorMessage} successMessage={successMessage} />
+  const Blogit = ({ blogs }) => {
+    return (
+      <div>
+        <Togglable buttonLabel="create new blog" ref={blogFormRef}>
+          <BlogForm createBlog={addBlog} />
+        </Togglable>
+        {blogs
+          .sort((a, b) => b.likes - a.likes)
+          .map((blog) => (
+            <Blog
+              key={blog.id}
+              blog={blog}
+              toggleLikes={() => toggleLikes(blog.id)}
+              handleDelete={deleteBlog}
+              userLoggedIn={user.username}
+            />
+          ))}
+      </div>
+    );
+  };
+
+  const Kayttaja = ({ user }) => {
+    return (
       <p>
         {user.name} logged in
         <button onClick={handleLogout}>logout</button>
       </p>
+    );
+  };
 
-      <Togglable buttonLabel="create new blog" ref={blogFormRef}>
-        <BlogForm createBlog={addBlog} />
-      </Togglable>
+  const Kayttajat = ({ users }) => {
+    return (
+      <div>
+        <h3>Users</h3>
+        <ul style={{ listStyleType: "none", padding: 0 }}>
+          <li style={{ display: "flex" }}>
+            <span style={{ width: "150px" }}></span>
+            <strong>
+              <span>blogs created</span>
+            </strong>
+          </li>
+          {users.map((user) => (
+            <li key={user.id} style={{ display: "flex" }}>
+              <span style={{ width: "150px" }}>{user.name}</span>
+              <span>{user.blogs.length}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    );
+  };
 
-      {blogs
-        .sort((a, b) => b.likes - a.likes)
-        .map((blog) => (
-          <Blog
-            key={blog.id}
-            blog={blog}
-            toggleLikes={() => toggleLikes(blog.id)}
-            handleDelete={deleteBlog}
-            userLoggedIn={user.username}
-          />
-        ))}
-    </div>
+  const padding = {
+    padding: 5,
+  };
+
+  return (
+    <Router>
+      <div>
+        <Link style={padding} to="/">
+          blogs
+        </Link>
+        <Link style={padding} to="/users">
+          users
+        </Link>
+
+        <h2>blogs</h2>
+        <Notification message={errorMessage} successMessage={successMessage} />
+        <Kayttaja user={user} />
+
+        <Routes>
+          <Route path="/" element={<Blogit blogs={blogs} />} />
+          <Route path="/users" element={<Kayttajat users={users} />} />
+        </Routes>
+      </div>
+    </Router>
   );
 };
 
