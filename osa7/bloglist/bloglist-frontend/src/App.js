@@ -12,7 +12,13 @@ import { useNotification } from "./NotificationContext";
 import { useUser } from "./LoginContext";
 import { updateBlog } from "./services/blogs";
 
-import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Link,
+  useParams,
+} from "react-router-dom";
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
@@ -157,7 +163,8 @@ const App = () => {
     },
   });
 
-  const toggleLikes = (id) => {
+  const toggleLikes = (event, id) => {
+    event.preventDefault();
     const blog = blogs.find((blog) => blog.id === id);
     const changedBlog = { ...blog, likes: blog.likes + 1 };
     console.log("moi", typeof id);
@@ -214,7 +221,7 @@ const App = () => {
     );
   }
 
-  const Blogit = ({ blogs }) => {
+  const Blogs = ({ blogs }) => {
     return (
       <div>
         <Togglable buttonLabel="create new blog" ref={blogFormRef}>
@@ -226,7 +233,7 @@ const App = () => {
             <Blog
               key={blog.id}
               blog={blog}
-              toggleLikes={() => toggleLikes(blog.id)}
+              toggleLikes={(event) => toggleLikes(event, blog.id)}
               handleDelete={deleteBlog}
               userLoggedIn={user.username}
             />
@@ -235,7 +242,7 @@ const App = () => {
     );
   };
 
-  const Kayttaja = ({ user }) => {
+  const LoggedUser = ({ user }) => {
     return (
       <p>
         {user.name} logged in
@@ -244,7 +251,7 @@ const App = () => {
     );
   };
 
-  const Kayttajat = ({ users }) => {
+  const Users = ({ users }) => {
     return (
       <div>
         <h3>Users</h3>
@@ -257,7 +264,9 @@ const App = () => {
           </li>
           {users.map((user) => (
             <li key={user.id} style={{ display: "flex" }}>
-              <span style={{ width: "150px" }}>{user.name}</span>
+              <span style={{ width: "150px" }}>
+                <Link to={`/users/${user.id}`}>{user.name}</Link>
+              </span>
               <span>{user.blogs.length}</span>
             </li>
           ))}
@@ -268,6 +277,26 @@ const App = () => {
 
   const padding = {
     padding: 5,
+  };
+
+  const User = ({ users }) => {
+    const id = useParams().id;
+    const user = users.find((n) => n.id === id);
+    if (!user) {
+      return null;
+    }
+    console.log("KÄYTTÄJÄ:", user);
+    return (
+      <div>
+        <h2>{user.name}</h2>
+        <h4>added blogs</h4>
+        <ul>
+          {user.blogs.map((blog) => (
+            <li key={blog.id}>{blog.title}</li>
+          ))}
+        </ul>
+      </div>
+    );
   };
 
   return (
@@ -282,11 +311,12 @@ const App = () => {
 
         <h2>blogs</h2>
         <Notification message={errorMessage} successMessage={successMessage} />
-        <Kayttaja user={user} />
+        <LoggedUser user={user} />
 
         <Routes>
-          <Route path="/" element={<Blogit blogs={blogs} />} />
-          <Route path="/users" element={<Kayttajat users={users} />} />
+          <Route path="/" element={<Blogs blogs={blogs} />} />
+          <Route path="/users" element={<Users users={users} />} />
+          <Route path="/users/:id" element={<User users={users} />} />
         </Routes>
       </div>
     </Router>
