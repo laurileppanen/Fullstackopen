@@ -1,24 +1,21 @@
 import { useState, useEffect, useRef } from "react";
-import Blog from "./components/Blog";
 import blogService from "./services/blogs";
 import loginService from "./services/login";
 import userService from "./services/users";
 import Notification from "./components/Notification";
-import BlogForm from "./components/BlogForm";
-import Togglable from "./components/Togglable";
+import Blogi from "./components/Blogi";
+import Blogs from "./components/Blogs";
+import Users from "./components/Users";
+import User from "./components/User";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useNotification } from "./NotificationContext";
 import { useUser } from "./LoginContext";
 import { updateBlog } from "./services/blogs";
 
-import {
-  BrowserRouter as Router,
-  Routes,
-  Route,
-  Link,
-  useParams,
-} from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+
+import { Table, Form, Button } from "react-bootstrap";
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
@@ -179,132 +176,39 @@ const App = () => {
     },
   });
 
-  const deleteBlog = async (blog) => {
-    if (window.confirm(`Remove blog ${blog.title} by ${blog.author}`)) {
-      deleteBlogMutation.mutate(blog);
-    }
-  };
-
   if (user === null) {
     return (
-      <div>
+      <div className="container">
         <h2>Log in to application</h2>
         <Notification />
 
-        <form onSubmit={handleLogin}>
-          <div>
-            username
-            <input
+        <Form onSubmit={handleLogin}>
+          <Form.Group>
+            <Form.Label>username:</Form.Label>
+            <Form.Control
               id="username"
               type="text"
               value={username}
               name="Username"
               onChange={({ target }) => setUsername(target.value)}
             />
-          </div>
-          <div>
-            password
-            <input
+
+            <Form.Label>password:</Form.Label>
+            <Form.Control
               id="password"
               type="password"
               value={password}
               name="Password"
               onChange={({ target }) => setPassword(target.value)}
             />
-          </div>
-          <button id="login-button" type="submit">
-            login
-          </button>
-        </form>
+            <Button id="login-button" type="submit" variant="primary">
+              login
+            </Button>
+          </Form.Group>
+        </Form>
       </div>
     );
   }
-
-  const Comment = ({ id, commentAdded }) => {
-    const [comment, setComment] = useState("");
-
-    const addComment = async (event) => {
-      event.preventDefault();
-      console.log("toimii");
-      const returnedComment = await blogService.createComment(
-        { content: comment },
-        id,
-      );
-      commentAdded(returnedComment);
-      setComment("");
-    };
-
-    return (
-      <form onSubmit={addComment}>
-        <div>
-          <input
-            value={comment}
-            onChange={(event) => setComment(event.target.value)}
-          />
-          <button>add comment</button>
-        </div>
-      </form>
-    );
-  };
-
-  const Blogi = ({ blogs }) => {
-    const id = useParams().id;
-    const blog = blogs.find((n) => n.id === id);
-    const [comments, setComments] = useState([]);
-
-    useEffect(() => {
-      if (blog) {
-        blogService.getComments(blog.id).then((comments) => {
-          setComments(comments);
-        });
-      }
-    }, [blog]);
-
-    const addCommentToState = (comment) => {
-      setComments([...comments, comment]);
-    };
-
-    if (!blog) {
-      return null;
-    }
-    return (
-      <div>
-        <h2>
-          {blog.title} {blog.author}
-        </h2>
-        <Link>{blog.url}</Link>
-        <br />
-        {blog.likes} likes
-        <button onClick={() => toggleLikes(blog.id)}>like</button>
-        <br />
-        added by {blog.user.name}
-        <h4>comments</h4>
-        <Comment id={id} commentAdded={addCommentToState} />
-        <ul>
-          {comments.map((comment) => (
-            <li key={comment._id}>{comment.content}</li>
-          ))}
-        </ul>
-      </div>
-    );
-  };
-
-  const Blogs = ({ blogs }) => {
-    return (
-      <div>
-        <Togglable buttonLabel="create new blog" ref={blogFormRef}>
-          <BlogForm createBlog={addBlog} />
-        </Togglable>
-        {blogs
-          .sort((a, b) => b.likes - a.likes)
-          .map((blog) => (
-            <Link key={blog.id} to={`/blogs/${blog.id}`}>
-              <Blog key={blog.id} blog={blog} />
-            </Link>
-          ))}
-      </div>
-    );
-  };
 
   const LoggedUser = ({ user }) => {
     return (
@@ -315,57 +219,13 @@ const App = () => {
     );
   };
 
-  const Users = ({ users }) => {
-    return (
-      <div>
-        <h3>Users</h3>
-        <ul style={{ listStyleType: "none", padding: 0 }}>
-          <li style={{ display: "flex" }}>
-            <span style={{ width: "150px" }}></span>
-            <strong>
-              <span>blogs created</span>
-            </strong>
-          </li>
-          {users.map((user) => (
-            <li key={user.id} style={{ display: "flex" }}>
-              <span style={{ width: "150px" }}>
-                <Link to={`/users/${user.id}`}>{user.name}</Link>
-              </span>
-              <span>{user.blogs.length}</span>
-            </li>
-          ))}
-        </ul>
-      </div>
-    );
-  };
-
   const padding = {
     padding: 5,
   };
 
-  const User = ({ users }) => {
-    const id = useParams().id;
-    const user = users.find((n) => n.id === id);
-    if (!user) {
-      return null;
-    }
-    console.log("KÄYTTÄJÄ:", user);
-    return (
-      <div>
-        <h2>{user.name}</h2>
-        <h4>added blogs</h4>
-        <ul>
-          {user.blogs.map((blog) => (
-            <li key={blog.id}>{blog.title}</li>
-          ))}
-        </ul>
-      </div>
-    );
-  };
-
   return (
     <Router>
-      <div>
+      <div className="container">
         <Link style={padding} to="/">
           blogs
         </Link>
@@ -378,10 +238,22 @@ const App = () => {
         <Notification message={errorMessage} successMessage={successMessage} />
 
         <Routes>
-          <Route path="/" element={<Blogs blogs={blogs} />} />
+          <Route
+            path="/"
+            element={
+              <Blogs
+                blogs={blogs}
+                addBlog={addBlog}
+                blogFormRef={blogFormRef}
+              />
+            }
+          />
           <Route path="/users" element={<Users users={users} />} />
           <Route path="/users/:id" element={<User users={users} />} />
-          <Route path="/blogs/:id" element={<Blogi blogs={blogs} />} />
+          <Route
+            path="/blogs/:id"
+            element={<Blogi blogs={blogs} toggleLikes={toggleLikes} />}
+          />
         </Routes>
       </div>
     </Router>
