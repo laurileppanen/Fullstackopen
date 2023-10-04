@@ -220,6 +220,33 @@ const App = () => {
     );
   }
 
+  const Comment = ({ id, commentAdded }) => {
+    const [comment, setComment] = useState("");
+
+    const addComment = async (event) => {
+      event.preventDefault();
+      console.log("toimii");
+      const returnedComment = await blogService.createComment(
+        { content: comment },
+        id,
+      );
+      commentAdded(returnedComment);
+      setComment("");
+    };
+
+    return (
+      <form onSubmit={addComment}>
+        <div>
+          <input
+            value={comment}
+            onChange={(event) => setComment(event.target.value)}
+          />
+          <button>add comment</button>
+        </div>
+      </form>
+    );
+  };
+
   const Blogi = ({ blogs }) => {
     const id = useParams().id;
     const blog = blogs.find((n) => n.id === id);
@@ -232,6 +259,10 @@ const App = () => {
         });
       }
     }, [blog]);
+
+    const addCommentToState = (comment) => {
+      setComments([...comments, comment]);
+    };
 
     if (!blog) {
       return null;
@@ -248,6 +279,7 @@ const App = () => {
         <br />
         added by {blog.user.name}
         <h4>comments</h4>
+        <Comment id={id} commentAdded={addCommentToState} />
         <ul>
           {comments.map((comment) => (
             <li key={comment._id}>{comment.content}</li>
