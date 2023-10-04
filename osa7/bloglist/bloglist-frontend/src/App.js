@@ -101,7 +101,7 @@ const App = () => {
 
       notificationDispatch({
         type: "SET_NOTIFICATION",
-        payload: { message: `User ${user.name} logged in`, type: "success" },
+        payload: { message: `User ${user.name} logged out`, type: "success" },
       });
       setTimeout(() => {
         notificationDispatch({ type: "CLEAR_NOTIFICATION" });
@@ -260,10 +260,10 @@ const App = () => {
 
   const LoggedUser = ({ user }) => {
     return (
-      <p>
+      <em>
         {user.name} logged in
         <button onClick={handleLogout}>logout</button>
-      </p>
+      </em>
     );
   };
 
