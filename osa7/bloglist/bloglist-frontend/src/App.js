@@ -223,6 +223,16 @@ const App = () => {
   const Blogi = ({ blogs }) => {
     const id = useParams().id;
     const blog = blogs.find((n) => n.id === id);
+    const [comments, setComments] = useState([]);
+
+    useEffect(() => {
+      if (blog) {
+        blogService.getComments(blog.id).then((comments) => {
+          setComments(comments);
+        });
+      }
+    }, [blog]);
+
     if (!blog) {
       return null;
     }
@@ -237,6 +247,12 @@ const App = () => {
         <button onClick={() => toggleLikes(blog.id)}>like</button>
         <br />
         added by {blog.user.name}
+        <h4>comments</h4>
+        <ul>
+          {comments.map((comment) => (
+            <li key={comment._id}>{comment.content}</li>
+          ))}
+        </ul>
       </div>
     );
   };

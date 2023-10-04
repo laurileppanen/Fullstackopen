@@ -1,0 +1,6 @@
+POST http://localhost:3003/api/blogs/641394816485427843e52ba2/comments
+Content-Type: application/json
+
+    {
+       "content": "Pelkkää priimaa!!"
+    }  
