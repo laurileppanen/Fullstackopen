@@ -163,11 +163,10 @@ const App = () => {
     },
   });
 
-  const toggleLikes = (event, id) => {
-    event.preventDefault();
+  const toggleLikes = (id) => {
+    console.log("moi", id);
     const blog = blogs.find((blog) => blog.id === id);
     const changedBlog = { ...blog, likes: blog.likes + 1 };
-    console.log("moi", typeof id);
     updateBlogMutation.mutate(changedBlog);
   };
 
@@ -221,6 +220,27 @@ const App = () => {
     );
   }
 
+  const Blogi = ({ blogs }) => {
+    const id = useParams().id;
+    const blog = blogs.find((n) => n.id === id);
+    if (!blog) {
+      return null;
+    }
+    return (
+      <div>
+        <h2>
+          {blog.title} {blog.author}
+        </h2>
+        <Link>{blog.url}</Link>
+        <br />
+        {blog.likes} likes
+        <button onClick={() => toggleLikes(blog.id)}>like</button>
+        <br />
+        added by {blog.user.name}
+      </div>
+    );
+  };
+
   const Blogs = ({ blogs }) => {
     return (
       <div>
@@ -230,13 +250,9 @@ const App = () => {
         {blogs
           .sort((a, b) => b.likes - a.likes)
           .map((blog) => (
-            <Blog
-              key={blog.id}
-              blog={blog}
-              toggleLikes={(event) => toggleLikes(event, blog.id)}
-              handleDelete={deleteBlog}
-              userLoggedIn={user.username}
-            />
+            <Link key={blog.id} to={`/blogs/${blog.id}`}>
+              <Blog key={blog.id} blog={blog} />
+            </Link>
           ))}
       </div>
     );
@@ -308,15 +324,16 @@ const App = () => {
         <Link style={padding} to="/users">
           users
         </Link>
+        <LoggedUser user={user} />
 
         <h2>blogs</h2>
         <Notification message={errorMessage} successMessage={successMessage} />
-        <LoggedUser user={user} />
 
         <Routes>
           <Route path="/" element={<Blogs blogs={blogs} />} />
           <Route path="/users" element={<Users users={users} />} />
           <Route path="/users/:id" element={<User users={users} />} />
+          <Route path="/blogs/:id" element={<Blogi blogs={blogs} />} />
         </Routes>
       </div>
     </Router>
