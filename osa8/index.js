@@ -134,13 +134,22 @@ const resolvers = {
       const bookByGenre = books.filter((book) =>
         book.genres.some((genre) => genre === args.genre)
       );
+      const bookByBoth = bookByGenre.filter(
+        (book) => book.author === args.author
+      );
 
       if (args.author && !args.genre) {
         console.log("toimii");
         return bookByAuthor;
       }
 
-      return bookByGenre;
+      if (!args.author && args.genre) {
+        return bookByGenre;
+      }
+
+      if (args.author && args.genre) {
+        return bookByBoth;
+      }
     },
     allAuthors: () => authors,
   },
