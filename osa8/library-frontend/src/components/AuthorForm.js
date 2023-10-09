@@ -1,20 +1,29 @@
 import { useState } from "react";
 import { useMutation } from "@apollo/client";
 
-import { EDIT_AUTHOR } from "../queries";
+import { ALL_AUTHORS, EDIT_AUTHOR } from "../queries";
+
+import Select from "react-select";
+import { useQuery } from "@apollo/client";
 
 const AuthorForm = () => {
-  const [name, setName] = useState("");
   const [born, setBorn] = useState("");
-
+  const result = useQuery(ALL_AUTHORS);
   const [changeBorn] = useMutation(EDIT_AUTHOR);
+
+  const names = result.data.allAuthors.map((author) => ({
+    value: author.name,
+    label: author.name,
+  }));
+  const [selectedName, setSelectedName] = useState(null);
 
   const submit = async (event) => {
     event.preventDefault();
 
-    changeBorn({ variables: { name, setBornTo: parseInt(born) } });
+    changeBorn({
+      variables: { name: selectedName.value, setBornTo: parseInt(born) },
+    });
 
-    setName("");
     setBorn("");
   };
 
@@ -24,10 +33,10 @@ const AuthorForm = () => {
 
       <form onSubmit={submit}>
         <div>
-          name{" "}
-          <input
-            value={name}
-            onChange={({ target }) => setName(target.value)}
+          <Select
+            defaultValue={selectedName}
+            onChange={setSelectedName}
+            options={names}
           />
         </div>
 
