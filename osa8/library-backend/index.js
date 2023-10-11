@@ -145,38 +145,45 @@ const typeDefs = `
 
 const resolvers = {
   Query: {
-    authorCount: () => Author.collection.countDocuments(),
-    bookCount: () => books.length,
+    authorCount: async () => Author.collection.countDocuments(),
+    bookCount: async () => Book.collection.countDocuments(),
     allBooks: async (root, args) => {
       if (!args.author && !args.genre) {
         return Book.find({});
       }
-      const bookByAuthor = books.filter((book) => book.author === args.author);
-      const bookByGenre = books.filter((book) =>
-        book.genres.some((genre) => genre === args.genre)
-      );
-      const bookByBoth = bookByGenre.filter(
-        (book) => book.author === args.author
-      );
 
       if (args.author && !args.genre) {
+        const author = await Author.findOne({ name: args.author });
         console.log("toimii");
-        return bookByAuthor;
+        if (!author) {
+          return [];
+        }
+        return Book.find({ author: author._id });
       }
 
       if (!args.author && args.genre) {
-        return bookByGenre;
+        return Book.find({ genres: args.genre });
       }
 
       if (args.author && args.genre) {
-        return bookByBoth;
+        return Book.find({ author: args.author, genre: args.genre });
       }
     },
-    allAuthors: () => authors,
+    allAuthors: async () => Author.find({}).exec(),
   },
   Author: {
-    bookCount: (author) =>
-      books.filter((book) => book.author === author.name).length,
+    bookCount: async (author) => {
+      const allBooks = await Book.find({}).exec();
+      return allBooks.filter(
+        (book) => book.author.toString() === author._id.toString()
+      ).length;
+    },
+  },
+
+  Book: {
+    author: async (book) => {
+      return Author.findById(book.author);
+    },
   },
 
   Mutation: {
@@ -193,18 +200,11 @@ const resolvers = {
       return book.save();
     },
 
-    editAuthor: (root, args) => {
-      const author = authors.find((author) => author.name === args.name);
+    editAuthor: async (root, args) => {
+      let author = await Author.findOne({ name: args.name });
+      author.born = args.setBornTo;
 
-      if (!author) {
-        return null;
-      }
-
-      const updatedAuthor = { ...author, born: args.setBornTo };
-      authors = authors.map((author) =>
-        author.name === args.name ? updatedAuthor : author
-      );
-      return updatedAuthor;
+      return author.save();
     },
   },
 };
