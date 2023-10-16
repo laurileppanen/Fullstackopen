@@ -1,22 +1,39 @@
 import { gql, useQuery } from "@apollo/client";
 import { ALL_BOOKS } from "../queries";
+import { useState } from "react";
 
 const Books = (props) => {
-  const result = useQuery(ALL_BOOKS);
-
+  const [genre, setGenre] = useState("");
+  const result = useQuery(ALL_BOOKS, {
+    variables: { genre: genre },
+  });
   if (!props.show) {
     return null;
   }
+  console.log("GENRE:", genre);
 
   if (result.loading) {
     return <div>loading...</div>;
   }
 
+  const Genre = () => {
+    if (genre) {
+      return (
+        <div>
+          in genre <strong>{genre}</strong>
+        </div>
+      );
+    }
+  };
+
   const books = result.data.allBooks;
+  console.log("BOOKIT", books);
 
   return (
     <div>
       <h2>books</h2>
+      <Genre />
+      <br />
 
       <table>
         <tbody>
@@ -34,6 +51,13 @@ const Books = (props) => {
           ))}
         </tbody>
       </table>
+      <button onClick={() => setGenre("refactoring")}>refactoring</button>
+      <button onClick={() => setGenre("agile")}>agile</button>
+      <button onClick={() => setGenre("patterns")}>patterns</button>
+      <button onClick={() => setGenre("design")}>design</button>
+      <button onClick={() => setGenre("crime")}>crime</button>
+      <button onClick={() => setGenre("classic")}>classic</button>
+      <button onClick={() => setGenre("")}>all genres</button>
     </div>
   );
 };
