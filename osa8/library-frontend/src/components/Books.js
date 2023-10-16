@@ -10,7 +10,6 @@ const Books = (props) => {
   if (!props.show) {
     return null;
   }
-  console.log("GENRE:", genre);
 
   if (result.loading) {
     return <div>loading...</div>;
