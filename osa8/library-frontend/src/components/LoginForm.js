@@ -1,12 +1,27 @@
 import { useMutation } from "@apollo/client";
 import { useEffect, useState } from "react";
-import { LOGIN } from "../queries";
+import { LOGIN, USER } from "../queries";
 
 const LoginForm = ({ setToken, show }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
-  const [login, result] = useMutation(LOGIN);
+  const [login, result] = useMutation(LOGIN, {
+    update: (cache, response) => {
+      const loginData = response.data?.login;
+      if (loginData) {
+        cache.updateQuery({ query: USER }, (data) => {
+          return {
+            ...data,
+            me: {
+              username: loginData.username,
+              favouriteGenre: loginData.favouriteGenre,
+            },
+          };
+        });
+      }
+    },
+  });
 
   useEffect(() => {
     if (result.data) {
