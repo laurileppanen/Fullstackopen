@@ -6,6 +6,16 @@ const jwt = require("jsonwebtoken");
 const Book = require("./models/book");
 const Author = require("./models/author");
 const User = require("./models/user");
+const DataLoader = require("dataloader");
+
+const bookCountLoader = new DataLoader(async (authorIds) => {
+  const books = await Book.find({ author: { $in: authorIds } });
+  const bookCounts = authorIds.map(
+    (id) =>
+      books.filter((book) => book.author.toString() === id.toString()).length
+  );
+  return bookCounts;
+});
 
 const resolvers = {
   Query: {
@@ -40,11 +50,8 @@ const resolvers = {
     },
   },
   Author: {
-    bookCount: async (author) => {
-      const allBooks = await Book.find({}).exec();
-      return allBooks.filter(
-        (book) => book.author.toString() === author._id.toString()
-      ).length;
+    bookCount: (author) => {
+      return bookCountLoader.load(author._id);
     },
   },
 
