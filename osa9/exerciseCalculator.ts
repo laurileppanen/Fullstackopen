@@ -1,3 +1,5 @@
+import { isNotNumber } from "./utils";
+
 interface Result {
   periodLength: number;
   trainingDays: number;
@@ -7,6 +9,19 @@ interface Result {
   target: number;
   average: number;
 }
+
+const parseArguments = (args: string[]) => {
+  if (args.length < 4) throw new Error("Not enough arguments");
+
+  const period = args.slice(3);
+  const periodAsNumbers: number[] = period.map((str) => parseFloat(str));
+
+  if (periodAsNumbers.some(isNotNumber)) {
+    throw new Error("Provided values were not numbers!");
+  } else {
+    return periodAsNumbers;
+  }
+};
 
 const calculateExercises = (results: Array<number>, target: number) => {
   let periodLength = results.length;
@@ -44,7 +59,20 @@ const calculateExercises = (results: Array<number>, target: number) => {
     average: average,
   };
 
-  return result;
+  console.log(result);
 };
 
-console.log(calculateExercises([3, 0, 2, 4.5, 0, 3, 1], 3));
+try {
+  const periodTable = parseArguments(process.argv);
+
+  const target = process.argv[2];
+  const targetAsNumber: number = parseFloat(target);
+
+  calculateExercises(periodTable, targetAsNumber);
+} catch (error: unknown) {
+  let errorMessage = "Something bad happened.";
+  if (error instanceof Error) {
+    errorMessage += " Error: " + error.message;
+  }
+  console.log(errorMessage);
+}
