@@ -24,12 +24,12 @@ const parseArguments = (args: string[]) => {
 };
 
 const calculateExercises = (results: Array<number>, target: number) => {
-  let periodLength = results.length;
-  let trainingDays = results.filter((result) => result > 0).length;
-  let average = results.reduce((a, b) => a + b, 0) / periodLength;
-  let success: boolean;
-  let rating;
-  let ratingDescription;
+  const periodLength = results.length;
+  const trainingDays = results.filter((result) => result > 0).length;
+  const average = results.reduce((a, b) => a + b, 0) / periodLength;
+  let success: boolean = false;
+  let rating = 0;
+  let ratingDescription = "";
 
   if (average - target <= -5) {
     success = false;
@@ -49,7 +49,7 @@ const calculateExercises = (results: Array<number>, target: number) => {
     ratingDescription = "Just like that!";
   }
 
-  let result: Result = {
+  const result: Result = {
     periodLength: periodLength,
     trainingDays: trainingDays,
     success: success,
