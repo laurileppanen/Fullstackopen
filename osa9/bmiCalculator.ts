@@ -14,27 +14,27 @@ const parseArguments = (args: string[]) => {
   }
 };
 
-const calculateBmi = (height: number, weight: number) => {
+export const calculateBmi = (height: number, weight: number) => {
   const heightInMetres = height * 0.01;
-  if (weight / heightInMetres ** 2 <= 18.4) {
-    console.log("Thinness (underweight)");
+  const bmi = weight / heightInMetres ** 2;
+  if (bmi <= 18.4) {
+    return "Thinness (underweight)";
   }
 
-  if (
-    weight / heightInMetres ** 2 > 18.4 &&
-    weight / heightInMetres ** 2 < 25
-  ) {
-    console.log("Normal (healthy weight)");
+  if (bmi > 18.4 && bmi < 25) {
+    return "Normal (healthy weight)";
   }
 
-  if (weight / heightInMetres ** 2 >= 25) {
-    console.log("Obese (overweight)");
+  if (bmi >= 25) {
+    return "Obese (overweight)";
   }
+
+  return "unknown";
 };
 
 try {
   const { height, weight } = parseArguments(process.argv);
-  calculateBmi(height, weight);
+  console.log(calculateBmi(height, weight));
 } catch (error: unknown) {
   let errorMessage = "Something bad happened.";
   if (error instanceof Error) {
