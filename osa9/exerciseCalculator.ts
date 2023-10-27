@@ -23,7 +23,7 @@ const parseArguments = (args: string[]) => {
   }
 };
 
-const calculateExercises = (results: Array<number>, target: number) => {
+export const calculateExercises = (results: Array<number>, target: number) => {
   const periodLength = results.length;
   const trainingDays = results.filter((result) => result > 0).length;
   const average = results.reduce((a, b) => a + b, 0) / periodLength;
@@ -60,6 +60,15 @@ const calculateExercises = (results: Array<number>, target: number) => {
   };
 
   console.log(result);
+  return {
+    periodLength,
+    trainingDays,
+    success,
+    rating,
+    ratingDescription,
+    target,
+    average,
+  };
 };
 
 try {
