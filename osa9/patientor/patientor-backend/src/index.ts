@@ -1,4 +1,5 @@
 import express from "express";
+import diaryRouter from "./routes/diagnoses";
 
 // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-var-requires
 const cors = require("cors");
@@ -14,6 +15,9 @@ app.get("/api/ping", (_req, res) => {
   console.log("someone pinged here");
   res.send("pong");
 });
+
+// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+app.use("/api/diagnoses", diaryRouter);
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
