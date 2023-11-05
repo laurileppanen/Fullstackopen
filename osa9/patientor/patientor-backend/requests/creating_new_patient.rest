@@ -1,0 +1,10 @@
+POST http://localhost:3001/api/patients
+Content-Type: application/json
+
+{
+  "name": "Lauri Leppänen",
+  "dateOfBirth": "1998-03-16",
+  "ssn": "115627-275T",
+  "gender": "male",
+  "occupation": "Software developer"  
+}
