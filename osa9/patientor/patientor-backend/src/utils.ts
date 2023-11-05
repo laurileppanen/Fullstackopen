@@ -1,4 +1,4 @@
-import { NewPatientEntry } from "./types";
+import { NewPatientEntry, Gender } from "./types";
 
 const isString = (text: unknown): text is string => {
   return typeof text === "string" || text instanceof String;
@@ -24,9 +24,15 @@ const parseDateOfBirth = (dateOfBirth: unknown): string => {
   return dateOfBirth;
 };
 
-const parseGender = (gender: unknown): string => {
-  if (!isString(gender) || !gender) {
-    throw new Error("Incorrect or missing gender");
+const isGender = (param: string): param is Gender => {
+  return Object.values(Gender)
+    .map((v) => v.toString())
+    .includes(param);
+};
+
+const parseGender = (gender: unknown): Gender => {
+  if (!isString(gender) || !isGender(gender)) {
+    throw new Error("Incorrect gender: " + gender);
   }
 
   return gender;

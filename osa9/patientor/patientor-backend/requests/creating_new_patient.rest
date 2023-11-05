@@ -3,8 +3,8 @@ Content-Type: application/json
 
 {
   "name": "Lauri Leppänen",
-  "dateOfBirth": "1998-03-16",
-  "ssn": "115627-275T",
+  "dateOfBirth": "1298-03-16",
+  "ssn": "115627-235T",
   "gender": "male",
   "occupation": "Software developer"  
 }
