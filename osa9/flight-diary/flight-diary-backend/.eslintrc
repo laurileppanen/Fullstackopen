@@ -25,6 +25,6 @@
   },
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
-    "project": "./tsconfig.json"
+    "project": "c:/users/lauri leppänen/fullstack/osa9/flight-diary/flight-diary-backend/tsconfig.json"
   }
 }
