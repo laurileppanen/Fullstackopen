@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { Diary, NewDiary } from "../types";
 
 const baseUrl = "http://localhost:3000/api/diaries";
@@ -8,5 +8,12 @@ export const getAllDiaries = () => {
 };
 
 export const createDiary = (object: NewDiary) => {
-  return axios.post<Diary>(baseUrl, object).then((response) => response.data);
+  return axios
+    .post<Diary>(baseUrl, object)
+    .then((response) => response.data)
+    .catch((error: AxiosError) => {
+      if (error.response) {
+        throw new Error(`${error.response.data}`);
+      }
+    });
 };
