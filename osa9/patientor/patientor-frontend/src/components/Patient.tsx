@@ -1,7 +1,8 @@
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import patientService from "../services/patients";
-import { Patient } from "../types";
+import diagnoseService from "../services/diagnoses";
+import { Diagnosis, Patient } from "../types";
 
 import MaleIcon from "@mui/icons-material/Male";
 import FemaleIcon from "@mui/icons-material/Female";
@@ -9,12 +10,15 @@ import FemaleIcon from "@mui/icons-material/Female";
 const PatientDetails = () => {
   const [patient, setPatient] = useState<Patient | null>(null);
   const { id } = useParams<{ id: string }>();
+  const [diagnose, setDiagnose] = useState<Diagnosis[] | null>(null);
 
   useEffect(() => {
     if (id) {
       const fetchPatientDetails = async () => {
         const patientData = await patientService.getById(id);
+        const diagnoseData = await diagnoseService.getDiagnoses();
         setPatient(patientData);
+        setDiagnose(diagnoseData);
       };
       fetchPatientDetails();
     }
@@ -28,9 +32,7 @@ const PatientDetails = () => {
   const description = patient.entries.map((e) => e.description);
 
   const diagnoseCodes = patient.entries.map((e) => e.diagnosisCodes);
-
   const koodit = diagnoseCodes.flat();
-  console.log("KOODIT:", koodit);
 
   return (
     <div>
@@ -46,9 +48,14 @@ const PatientDetails = () => {
         {date} {description}
       </div>
       <ul>
-        {koodit.map((code, index) => (
-          <li key={index}>{code}</li>
-        ))}
+        {koodit.map((code, index) => {
+          const matchingDiagnose = diagnose?.find((d) => d.code === code);
+          return (
+            <li key={index}>
+              {code} {matchingDiagnose ? ` ${matchingDiagnose.name}` : ""}
+            </li>
+          );
+        })}
       </ul>
     </div>
   );
