@@ -24,6 +24,14 @@ const PatientDetails = () => {
     return <div>Loading...</div>;
   }
 
+  const date = patient.entries.map((e) => e.date);
+  const description = patient.entries.map((e) => e.description);
+
+  const diagnoseCodes = patient.entries.map((e) => e.diagnosisCodes);
+
+  const koodit = diagnoseCodes.flat();
+  console.log("KOODIT:", koodit);
+
   return (
     <div>
       <h2>
@@ -33,6 +41,15 @@ const PatientDetails = () => {
       </h2>
       <div>ssn: {patient.ssn}</div>
       <div>occupation: {patient.occupation}</div>
+      <h3>entries</h3>
+      <div>
+        {date} {description}
+      </div>
+      <ul>
+        {koodit.map((code, index) => (
+          <li key={index}>{code}</li>
+        ))}
+      </ul>
     </div>
   );
 };
