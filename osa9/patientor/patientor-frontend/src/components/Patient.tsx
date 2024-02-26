@@ -7,6 +7,7 @@ import FemaleIcon from "@mui/icons-material/Female";
 import EntryDetails from "./EntryDetails";
 import { Entry } from "../types";
 import { Patient } from "../types";
+import { Button } from "@mui/material";
 
 const PatientDetails = () => {
   const [patient, setPatient] = useState<Patient | null>(null);
@@ -50,6 +51,9 @@ const PatientDetails = () => {
           <EntryDetails key={index} entry={entry} />
         </div>
       ))}
+      <Button variant="contained" color="primary">
+        Add new entry
+      </Button>
     </div>
   );
 };

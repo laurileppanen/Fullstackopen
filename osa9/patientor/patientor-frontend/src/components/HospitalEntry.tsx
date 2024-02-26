@@ -6,7 +6,6 @@ import { useParams } from "react-router-dom";
 import diagnoseService from "../services/diagnoses";
 
 const HospitalEntry: React.FC<{ entry: HospitalEntryType }> = ({ entry }) => {
-  console.log("ENTRY:", entry);
   const [diagnose, setDiagnose] = useState<Diagnosis[] | null>(null);
   const { id } = useParams<{ id: string }>();
 
