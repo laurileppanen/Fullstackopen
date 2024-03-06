@@ -41,9 +41,9 @@ router.post("/:id/entries", (req, res) => {
     );
     res.json(addedEntry);
   } catch (error: unknown) {
-    let errorMessage = "Something went wrong.";
+    let errorMessage = "";
     if (error instanceof Error) {
-      errorMessage += " Error; " + error.message;
+      errorMessage += error.message;
     }
     res.status(400).send(errorMessage);
   }

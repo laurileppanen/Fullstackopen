@@ -114,12 +114,12 @@ const parseSpecialist = (specialist: unknown): string => {
 };
 
 const parseDiagnosisCodes = (object: unknown): Array<DiagnoseEntry["code"]> => {
-  if (!object || typeof object !== "object" || !("diagnosisCodes" in object)) {
+  if (!object || typeof object !== "object") {
     // we will just trust the data to be in correct form
     return [] as Array<DiagnoseEntry["code"]>;
   }
 
-  return object.diagnosisCodes as Array<DiagnoseEntry["code"]>;
+  return object as Array<DiagnoseEntry["code"]>;
 };
 
 const parseDischargeDate = (date: unknown): string => {
@@ -213,14 +213,17 @@ const parseHealthCheckType = (type: unknown): "HealthCheck" => {
 };
 
 const isHealthCheckRating = (param: number): param is HealthCheckRating => {
-  return Object.values(HealthCheckRating).includes(param);
+  const enumNumbers = Object.keys(HealthCheckRating)
+    .filter((key) => !isNaN(Number(key)))
+    .map((key) => Number(key));
+
+  return enumNumbers.includes(param);
 };
 
 const parseHealthCheckRating = (rating: unknown): HealthCheckRating => {
   if (typeof rating !== "number" || !isHealthCheckRating(rating)) {
     throw new Error("Incorrect or missing HealthCheckRating: " + rating);
   }
-
   return rating;
 };
 
