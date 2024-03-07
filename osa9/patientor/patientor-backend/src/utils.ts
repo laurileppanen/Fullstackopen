@@ -164,7 +164,7 @@ const parseEmployerName = (employer: unknown): string => {
 
 const parseSickLeaveDate = (date: unknown): string => {
   if (!isString(date) || !date) {
-    throw new Error("Incorrect or missing start date");
+    throw new Error("Incorrect or missing Start date or End date");
   }
   return date;
 };

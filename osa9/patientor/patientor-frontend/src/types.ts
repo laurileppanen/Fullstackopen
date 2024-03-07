@@ -58,6 +58,8 @@ export interface HospitalEntry extends BaseEntry {
   };
 }
 
+export type HospitalFormValues = Omit<HospitalEntry, "id">;
+
 export interface OccupationalHealthcareEntry extends BaseEntry {
   type: "OccupationalHealthcare";
   employerName: string;
@@ -66,6 +68,11 @@ export interface OccupationalHealthcareEntry extends BaseEntry {
     endDate: string;
   };
 }
+
+export type OccupationalHealthcareFormValues = Omit<
+  OccupationalHealthcareEntry,
+  "id"
+>;
 
 export type Entry =
   | HospitalEntry

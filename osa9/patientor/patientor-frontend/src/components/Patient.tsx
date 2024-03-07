@@ -1,132 +1,31 @@
 import { useParams } from "react-router-dom";
-import { SyntheticEvent, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import patientService from "../services/patients";
-
+import NewHealthCheckEntry from "./newEntries/NewHealthCheckEntry";
+import NewHospitalEntry from "./newEntries/NewHospitalEntry";
+import NewOccupationalHealthcareEntry from "./newEntries/NewOccupationalHealthcheckEntry";
 import MaleIcon from "@mui/icons-material/Male";
 import FemaleIcon from "@mui/icons-material/Female";
 import EntryDetails from "./EntryDetails";
-import { DiagnoseEntry, Entry, HealthCheckFormValues } from "../types";
+import {
+  Entry,
+  HealthCheckFormValues,
+  HospitalFormValues,
+  OccupationalHealthcareFormValues,
+} from "../types";
 import { Patient } from "../types";
 import { Button } from "@mui/material";
 
 import "./patient.css";
 import axios from "axios";
 
-interface NewHealthCheckEntryProps {
-  handleButtonClick: () => void;
-  onSubmit: (values: HealthCheckFormValues) => void;
-}
-
-const NewHealthCheckEntry = ({
-  handleButtonClick,
-  onSubmit,
-}: NewHealthCheckEntryProps) => {
-  const [description, setDescription] = useState("");
-  const [date, setDate] = useState("");
-  const [specialist, setSpecialist] = useState("");
-  const [healthCheckRating, setHealthCheckRating] = useState(-1);
-  const [diagnosisCodes, setDiagnosisCodes] = useState<
-    Array<DiagnoseEntry["code"]>
-  >([]);
-
-  const handleHealthCheckRatingChange = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const value = event.target.value;
-    const number = parseInt(value, 10);
-
-    if (!isNaN(number)) {
-      setHealthCheckRating(number);
-    } else {
-      setHealthCheckRating(-1);
-    }
-  };
-
-  const handleDiagnosisCodesChange = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const inputVal = event.target.value;
-    const codes = inputVal.split(",").filter((code) => code !== "");
-    console.log("moi", codes);
-    setDiagnosisCodes(codes);
-  };
-
-  const addHealthCheckEntry = (event: SyntheticEvent) => {
-    event.preventDefault();
-
-    onSubmit({
-      description,
-      date,
-      specialist,
-      healthCheckRating,
-      diagnosisCodes,
-      type: "HealthCheck",
-    });
-  };
-
-  return (
-    <div className="dashed-border-box">
-      <h4>New HealthCheck entry</h4>
-      <form onSubmit={addHealthCheckEntry}>
-        <div style={{ color: "#aaaaaa", marginBottom: "5px" }}>Description</div>
-        <input
-          className="input-underline"
-          type="text"
-          onChange={({ target }) => setDescription(target.value)}
-        />
-        <div style={{ color: "#aaaaaa", marginBottom: "5px" }}>Date</div>
-        <input
-          className="input-underline"
-          type="text"
-          onChange={({ target }) => setDate(target.value)}
-        />
-        <div style={{ color: "#aaaaaa", marginBottom: "5px" }}>Specialist</div>
-        <input
-          className="input-underline"
-          type="text"
-          onChange={({ target }) => setSpecialist(target.value)}
-        />
-        <div style={{ color: "#aaaaaa", marginBottom: "5px" }}>
-          Healthcheck rating
-        </div>
-        <input
-          className="input-underline"
-          type="text"
-          onChange={handleHealthCheckRatingChange}
-        />
-        <div style={{ color: "#aaaaaa", marginBottom: "5px" }}>
-          Diagnosis codes
-        </div>
-        <input
-          className="input-underline"
-          type="text"
-          onChange={handleDiagnosisCodesChange}
-        />
-        <div className="button-container">
-          <Button
-            variant="contained"
-            style={{ backgroundColor: "red", color: "white" }}
-            onClick={handleButtonClick}
-          >
-            Cancel
-          </Button>
-          <Button
-            variant="contained"
-            style={{ backgroundColor: "#cccccc", color: "black" }}
-            type="submit"
-          >
-            Add
-          </Button>
-        </div>
-      </form>
-    </div>
-  );
-};
-
 const PatientDetails = () => {
   const [patient, setPatient] = useState<Patient | null>(null);
   const { id } = useParams<{ id: string }>();
-  const [showForm, setShowForm] = useState(false);
+  const [HealthCheckForm, setHealthCheckForm] = useState(false);
+  const [HospitalForm, setHospitalForm] = useState(false);
+  const [OccupationalHealthcareForm, setOccupationalHealthcareForm] =
+    useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   useEffect(() => {
@@ -143,8 +42,22 @@ const PatientDetails = () => {
     return <div>Loading...</div>;
   }
 
-  const handleButtonClick = () => {
-    setShowForm((currentShowForm) => !currentShowForm);
+  const handleHealthCheckClick = () => {
+    setHealthCheckForm((currentShowForm) => !currentShowForm);
+    setHospitalForm(false);
+    setOccupationalHealthcareForm(false);
+  };
+
+  const handleHospitalClick = () => {
+    setHospitalForm((currentShowForm) => !currentShowForm);
+    setHealthCheckForm(false);
+    setOccupationalHealthcareForm(false);
+  };
+
+  const handleOccupationalHealthcareClick = () => {
+    setOccupationalHealthcareForm((currentShowForm) => !currentShowForm);
+    setHealthCheckForm(false);
+    setHospitalForm(false);
   };
 
   const submitNewHealthCheckEntry = async (values: HealthCheckFormValues) => {
@@ -164,6 +77,63 @@ const PatientDetails = () => {
       }
     } catch (error) {
       console.error("Error adding new healthcheck entry:", error);
+      if (axios.isAxiosError(error) && error.response) {
+        console.error("Error response data:", error.response.data);
+        setErrorMessage(error.response.data);
+      } else {
+        setErrorMessage("Failed to add new entry. An unknown error occurred.");
+      }
+    }
+  };
+
+  const submitNewHospitalEntry = async (values: HospitalFormValues) => {
+    if (!id) {
+      console.error("ID is undefined");
+      return;
+    }
+
+    try {
+      const entry = await patientService.createHospitalEntry(values, id);
+      if (patient && patient.entries) {
+        setPatient({
+          ...patient,
+          entries: patient.entries.concat(entry),
+        });
+        setErrorMessage(null);
+      }
+    } catch (error) {
+      console.error("Error adding new hospital entry:", error);
+      if (axios.isAxiosError(error) && error.response) {
+        console.error("Error response data:", error.response.data);
+        setErrorMessage(error.response.data);
+      } else {
+        setErrorMessage("Failed to add new entry. An unknown error occurred.");
+      }
+    }
+  };
+
+  const submitNewOccupationalHealthcareEntry = async (
+    values: OccupationalHealthcareFormValues
+  ) => {
+    if (!id) {
+      console.error("ID is undefined");
+      return;
+    }
+
+    try {
+      const entry = await patientService.createOccupationalHealthcareEntry(
+        values,
+        id
+      );
+      if (patient && patient.entries) {
+        setPatient({
+          ...patient,
+          entries: patient.entries.concat(entry),
+        });
+        setErrorMessage(null);
+      }
+    } catch (error) {
+      console.error("Error adding new hospital entry:", error);
       if (axios.isAxiosError(error) && error.response) {
         console.error("Error response data:", error.response.data);
         setErrorMessage(error.response.data);
@@ -220,18 +190,26 @@ const PatientDetails = () => {
       </h2>
       <div>ssn: {patient.ssn}</div>
       <div>occupation: {patient.occupation}</div>
-
       {errorMessage && <ErrorMessage message={errorMessage} />}
-
-      {showForm && (
+      {HealthCheckForm && (
         <NewHealthCheckEntry
-          handleButtonClick={handleButtonClick}
+          handleButtonClick={handleHealthCheckClick}
           onSubmit={submitNewHealthCheckEntry}
         />
       )}
-
+      {HospitalForm && (
+        <NewHospitalEntry
+          handleButtonClick={handleHospitalClick}
+          onSubmit={submitNewHospitalEntry}
+        />
+      )}
+      {OccupationalHealthcareForm && (
+        <NewOccupationalHealthcareEntry
+          handleButtonClick={handleOccupationalHealthcareClick}
+          onSubmit={submitNewOccupationalHealthcareEntry}
+        />
+      )}
       <h3>entries</h3>
-
       {patient.entries.map((entry: Entry, index: number) => (
         <div
           key={index}
@@ -245,8 +223,22 @@ const PatientDetails = () => {
           <EntryDetails key={index} entry={entry} />
         </div>
       ))}
-      <Button variant="contained" color="primary" onClick={handleButtonClick}>
-        Add new entry
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={handleHealthCheckClick}
+      >
+        Add new HealthCheck entry
+      </Button>{" "}
+      <Button variant="contained" color="primary" onClick={handleHospitalClick}>
+        Add new Hospital entry
+      </Button>{" "}
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={handleOccupationalHealthcareClick}
+      >
+        Add new OccupationalHealthcare entry
       </Button>
     </div>
   );
