@@ -14,7 +14,7 @@ import {
   OccupationalHealthcareFormValues,
 } from "../types";
 import { Patient } from "../types";
-import { Button } from "@mui/material";
+import { Alert, Button } from "@mui/material";
 
 import "./patient.css";
 import axios from "axios";
@@ -151,32 +151,8 @@ const PatientDetails = () => {
     if (!message) return null;
 
     return (
-      <div
-        style={{
-          color: "black",
-          backgroundColor: "#ffe4e9",
-          padding: "10px",
-          display: "flex",
-          alignItems: "center",
-        }}
-      >
-        <span
-          style={{
-            marginRight: "10px",
-            display: "inline-flex",
-            justifyContent: "center",
-            alignItems: "center",
-            width: "20px",
-            height: "20px",
-            borderRadius: "50%",
-            backgroundColor: "black",
-            color: "white",
-            fontSize: "16px",
-          }}
-        >
-          !
-        </span>
-        {message}
+      <div>
+        <Alert severity="error">{message}</Alert>
       </div>
     );
   };
